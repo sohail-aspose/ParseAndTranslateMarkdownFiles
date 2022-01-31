@@ -7,8 +7,8 @@ url: /2021/04/29/generate-reports-from-excel-data-in-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Convert Excel to Word in C#'
-  - 'Excel Data to Word using C#'
+  - 'Convert Excel to Word in CSharp'
+  - 'Excel Data to Word using CSharp'
   - Generate Reports
   - Generate Reports from Excel
 

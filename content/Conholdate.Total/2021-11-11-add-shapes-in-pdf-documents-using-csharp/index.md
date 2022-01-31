@@ -7,9 +7,9 @@ url: /2021/11/11/add-shapes-in-pdf-documents-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Add Circle in PDF using C#'
-  - 'Add Rectangle in PDF using C#'
-  - 'Add Shapes in PDF using C#'
+  - 'Add Circle in PDF using CSharp'
+  - 'Add Rectangle in PDF using CSharp'
+  - 'Add Shapes in PDF using CSharp'
   - Draw Shapes in PDF
   - Drawing Shapes
 

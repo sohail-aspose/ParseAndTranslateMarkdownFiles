@@ -7,7 +7,7 @@ url: /2021/07/06/render-zip-archives-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'C# API to View ZIP Files'
+  - 'CSharp API to View ZIP Files'
   - GroupDocs.Viewer for .NET
   - Render ZIP Archives in HTML
   - Render ZIP Archives in PDF

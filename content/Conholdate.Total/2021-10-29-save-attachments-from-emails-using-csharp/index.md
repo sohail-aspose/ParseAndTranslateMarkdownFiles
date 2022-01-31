@@ -7,9 +7,9 @@ url: /2021/10/29/save-attachments-from-emails-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Save Attachments using C#'
-  - 'Save Email Attachments in C#'
-  - 'View Attachments using C#'
+  - 'Save Attachments using CSharp'
+  - 'Save Email Attachments in CSharp'
+  - 'View Attachments using CSharp'
   - View Email Attachments as PDF
 
 ---

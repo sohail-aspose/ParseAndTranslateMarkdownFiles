@@ -7,7 +7,7 @@ url: /2021/09/23/convert-pdf-to-images-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'C# API to Convert PDF to Images'
+  - 'CSharp API to Convert PDF to Images'
   - extract image from PDF
   - PDF to BMP
   - PDF to Image

@@ -7,8 +7,8 @@ url: /2021/10/22/add-text-or-image-watermarks-in-word-documents-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Add Image Watermark using C#'
-  - 'Add Text Watermark using C#'
+  - 'Add Image Watermark using CSharp'
+  - 'Add Text Watermark using CSharp'
   - Add Watermark
   - Add Watermark Image
 

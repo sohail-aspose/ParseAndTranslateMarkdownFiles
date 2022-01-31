@@ -7,11 +7,11 @@ url: /2021/10/31/create-charts-in-word-documents-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Charts in Word using C#'
-  - 'Create Area Charts in C#'
-  - 'Create Charts in C#'
-  - 'Create Columns Charts C#'
-  - 'Create Scatter Charts in C#'
+  - 'Charts in Word using CSharp'
+  - 'Create Area Charts in CSharp'
+  - 'Create Charts in CSharp'
+  - 'Create Columns Charts CSharp'
+  - 'Create Scatter Charts in CSharp'
 
 ---
 

@@ -7,11 +7,11 @@ url: /2021/09/18/create-encrypted-zip-files-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'C# API to Create ZIP Archives'
+  - 'CSharp API to Create ZIP Archives'
   - Create Password-Protected ZIP Files
-  - 'Create ZIP Archives using C#'
+  - 'Create ZIP Archives using CSharp'
   - Encrypt Files and Folders in ZIP
-  - 'Encrypt ZIP Archives using C#'
+  - 'Encrypt ZIP Archives using CSharp'
 
 ---
 

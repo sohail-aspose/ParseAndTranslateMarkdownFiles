@@ -9,7 +9,7 @@ categories:
 tags:
   - Classify Documents for Taxonomy
   - Classify PDF Documents
-  - 'Classify PDF using C#'
+  - 'Classify PDF using CSharp'
   - document classification
 
 ---

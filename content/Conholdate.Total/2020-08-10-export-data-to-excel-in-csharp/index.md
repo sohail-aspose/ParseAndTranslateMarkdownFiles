@@ -8,7 +8,7 @@ categories:
   - Conholdate.Total Product Family
 tags:
   - CSV to Excel
-  - 'Export Array to Excel C#'
+  - 'Export Array to Excel CSharp'
   - Export DataTable to Excel
   - Export rows and columns data to Excel
   - GridView to Excel

@@ -7,12 +7,12 @@ url: /2021/12/15/add-headers-and-footers-in-pdf-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Add Headers and Footer in C#'
-  - 'Add Image in Footers using C#'
-  - 'Add Image in Headers using C#'
-  - 'Add Page Numbers in Footer using C#'
-  - 'Add Text in Footers using C#'
-  - 'Add Text in Headers using C#'
+  - 'Add Headers and Footer in CSharp'
+  - 'Add Image in Footers using CSharp'
+  - 'Add Image in Headers using CSharp'
+  - 'Add Page Numbers in Footer using CSharp'
+  - 'Add Text in Footers using CSharp'
+  - 'Add Text in Headers using CSharp'
 
 ---
 

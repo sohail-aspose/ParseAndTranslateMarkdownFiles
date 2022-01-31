@@ -7,10 +7,10 @@ url: /2021/05/05/add-or-remove-custom-xmp-metadata-from-gif-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Add Custom XMP Metadata C#'
+  - 'Add Custom XMP Metadata CSharp'
   - Custom XMP Metadata to GIF
-  - 'Read Custom XMP Metadata C#'
-  - 'Remove Custom XMP Metadata C#'
+  - 'Read Custom XMP Metadata CSharp'
+  - 'Remove Custom XMP Metadata CSharp'
 
 ---
 

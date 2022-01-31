@@ -7,9 +7,9 @@ url: /2021/12/07/convert-pdf-to-html-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'C# .NET API for PDF to HTML'
+  - 'CSharp .NET API for PDF to HTML'
   - Convert PDF to HTML
-  - 'Convert PDF to HTML using C#'
+  - 'Convert PDF to HTML using CSharp'
   - PDF to HTML
 
 ---

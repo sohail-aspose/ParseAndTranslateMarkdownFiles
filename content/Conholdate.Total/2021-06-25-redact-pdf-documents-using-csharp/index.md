@@ -7,10 +7,10 @@ url: /2021/06/25/redact-pdf-documents-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Multiple Redaction in PDF using C#'
+  - 'Multiple Redaction in PDF using CSharp'
   - Redact Images in PDF
   - Redact Metadata in PDF
-  - 'Redact PDF using C#'
+  - 'Redact PDF using CSharp'
   - Redact Text in PDF
 
 ---

@@ -7,9 +7,9 @@ url: /2021/11/19/merge-word-documents-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Combine Word Files using C#'
-  - 'Merge DOCX Files using C#'
-  - 'Merge Word Documents in C#'
+  - 'Combine Word Files using CSharp'
+  - 'Merge DOCX Files using CSharp'
+  - 'Merge Word Documents in CSharp'
   - Merge Word into PDF
 
 ---

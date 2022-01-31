@@ -8,9 +8,9 @@ categories:
   - Conholdate.Total Product Family
 tags:
   - Convert HTML to DOCX
-  - 'Convert HTML to DOCX in C#'
+  - 'Convert HTML to DOCX in CSharp'
   - HTML to Word
-  - 'HTML to Word in C#'
+  - 'HTML to Word in CSharp'
 
 ---
 

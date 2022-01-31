@@ -6,11 +6,11 @@ url: /2021/04/17/convert-jpg-to-png-or-pdf-in-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'C# API for JPEG to PNG conversion'
-  - 'Convert JPEG to PDF in C#'
+  - 'CSharp API for JPEG to PNG conversion'
+  - 'Convert JPEG to PDF in CSharp'
   - convert jpg to png
   - JPEG2000 to PNG conversion APII
-  - 'jpg to png in c#'
+  - 'jpg to png in CSharp'
 
 ---
 

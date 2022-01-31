@@ -9,7 +9,7 @@ categories:
 tags:
   - Compare Multiple PDF Files
   - Compare PDF Files
-  - 'Compare PDF Files using C#'
+  - 'Compare PDF Files using CSharp'
 
 ---
 

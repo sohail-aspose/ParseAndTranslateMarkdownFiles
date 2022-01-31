@@ -7,10 +7,10 @@ url: /2021/05/21/extract-text-from-doc-or-docx-using-csharp/
 categories:
   - Conholdate.Total Product Family
 tags:
-  - 'Extract Formatted Text using C#'
+  - 'Extract Formatted Text using CSharp'
   - Extract Text
   - Extract Text from DOCX
-  - 'Extract Text from Page using C#'
+  - 'Extract Text from Page using CSharp'
   - Extract Text from Word
 
 ---
