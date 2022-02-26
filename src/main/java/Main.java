@@ -4,7 +4,8 @@ import java.io.FilenameFilter;
 public class Main {
 
     public static void main(String[] args) {
-        translateBlogPosts("fr");
+        //FixIssuesInExportedContent.fixIssuesInExportedContent();
+        translateBlogPosts("zh");
     }
 
     public static void translateBlogPosts(String targetLanguage) {

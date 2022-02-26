@@ -1,4 +1,4 @@
-import Utils.Utils;
+import Utils.*;
 
 import java.io.*;
 import java.net.URL;
@@ -23,19 +23,20 @@ public class FixIssuesInExportedContent {
         // Step 0.2: Remove <p> and </p> tags from the excerpt/summary.
         // Step 1: Read all files inside Conholdate.Total that ends with md.
         // Step 2: Create folder for each file without md part.
-        // Step 3: Copy the index.md file yo the respective folder.
+        // Step 3: Copy the index.md file to the respective folder.
         // Step 4: Create images folder inside all file folders.
         // Step 5: Extract URLs of images from an MD file, download images and place them
         // inside file's images folder.
         // Step 6: Fetch <figure></figure> tag and replace it with Hugo figure tag.
         // Step 7: Read Blog web content, fetch GISTs URLs and place Hugo shortcode for GIST.
+        // Step 8: Format and show Code Samples.
 
-        /*step0();
+        step0();
         step1ToStep3();
         step4();
         step5();
         step6();
-        step7();*/
+        step7();
     }
 
     public static void step0() {
@@ -46,18 +47,18 @@ public class FixIssuesInExportedContent {
             }
         });
 
-        /*for (File aFile : listOfFiles) {
+        for (File aFile : listOfFiles) {
             executeStep0(aFile.getPath());
-        }*/
+        }
 
-        for (File listOfFolder : listOfFiles) {
+        /*for (File listOfFolder : listOfFiles) {
             if (listOfFolder.isDirectory()) {
-                File indexFile = new File(listOfFolder, "index.md");
+                File indexFile = new File(listOfFolder, "index.fr.md");
                 if (indexFile.exists()) {
                     executeStep0(indexFile.getPath());
                 }
             }
-        }
+        }*/
     }
 
     public static void executeStep0(String filePath) {
@@ -69,6 +70,50 @@ public class FixIssuesInExportedContent {
             markdownText = markdownText.replace("</p>", "");
             markdownText = markdownText.replace("<P>", "");
             markdownText = markdownText.replace("</P>", "");
+            markdownText = markdownText.replace("&nbsp;", " ");
+
+            // Format Code Samples in the blog posts.
+            ArrayList<String> preCodes = new ArrayList();
+            Pattern p = Pattern.compile("<pre class=.*?>(<code>)?");
+            Matcher m = p.matcher(markdownText);
+            while (m.find()) {
+                preCodes.add(m.group(0));
+            }
+
+            for(String aPreCode : preCodes) {
+                markdownText = markdownText.replace(aPreCode, "```\n");
+            }
+
+            preCodes = new ArrayList();
+            p = Pattern.compile("(</code>)?</pre>");
+            m = p.matcher(markdownText);
+            while (m.find()) {
+                preCodes.add(m.group(0));
+            }
+
+            for(String aPreCode : preCodes) {
+                markdownText = markdownText.replace(aPreCode, "\n```");
+            }
+
+            // Format Code Samples in the blog posts.
+            markdownText = markdownText.replace("&lt;", "<");
+            markdownText = markdownText.replace("&gt;", ">");
+
+            // Replace <strong> </strong> tags with ** **.
+            p = Pattern.compile("<strong>(.*)</strong>");
+            m = p.matcher(markdownText);
+            ArrayList<String> strongTextWithTag = new ArrayList<>();
+            ArrayList<String> strongTextWithOutTag = new ArrayList<>();
+            while (m.find()) {
+                strongTextWithTag.add(m.group(0));
+                strongTextWithOutTag.add(m.group(1));
+            }
+
+            for(int i=0; i<strongTextWithTag.size(); i++) {
+                markdownText = markdownText.replace(strongTextWithTag.get(i),
+                        "**" + strongTextWithOutTag.get(i) + "**");
+            }
+
             overwriteFileContent(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -383,6 +428,52 @@ public class FixIssuesInExportedContent {
 
             // Replace content of the file with updated markup text.
             overwriteFileContent(indexFilePath, markdownText);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void stepTemp() {
+        File folder = new File("content/Conholdate.Total/");
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        /*for (File aFile : listOfFiles) {
+            executeStep0(aFile.getPath());
+        }*/
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                File indexFile = new File(listOfFolder, "index.fr.md");
+                if (indexFile.exists()) {
+                    executeStepTemp(indexFile.getPath());
+                }
+            }
+        }
+    }
+
+    public static void executeStepTemp(String filePath) {
+        try {
+            String markdownText = Utils.readFile(filePath);
+
+            Pattern p = Pattern.compile("<strong>(.*)</strong>");
+            Matcher m = p.matcher(markdownText);
+            ArrayList<String> strongTextWithTag = new ArrayList<>();
+            ArrayList<String> strongTextWithOutTag = new ArrayList<>();
+            while (m.find()) {
+                strongTextWithTag.add(m.group(0));
+                strongTextWithOutTag.add(m.group(1));
+            }
+
+            for(int i=0; i<strongTextWithTag.size(); i++) {
+                markdownText = markdownText.replace(strongTextWithTag.get(i),
+                        "**" + strongTextWithOutTag.get(i) + "**");
+            }
+
+            overwriteFileContent(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

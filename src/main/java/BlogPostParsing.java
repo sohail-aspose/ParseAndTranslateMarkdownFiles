@@ -1,12 +1,10 @@
-import Utils.Utils;
-import model.GistEntity;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import Utils.*;
 
 public class BlogPostParsing {
 
@@ -70,7 +68,7 @@ public class BlogPostParsing {
     }
 
     static String translateTitle(String textString, String markdownText) {
-        Pattern p = Pattern.compile("title: ['|\"](.+?)['|\"]");
+        Pattern p = Pattern.compile("title: (.+?)\n");
         Matcher m = p.matcher(textString);
 
         if (m.find()) {
@@ -79,7 +77,7 @@ public class BlogPostParsing {
 
             String translatedString = GoogleTranslationAPI.translateString(textToTranslate, targetLanguage);
 
-            markdownText = markdownText.replace(matchedString, "title: \"" + translatedString + "\"");
+            markdownText = markdownText.replace(matchedString, "title: \"" + translatedString + "\"\n");
         }
         return markdownText;
     }
@@ -100,18 +98,17 @@ public class BlogPostParsing {
     }
 
     static String translateURL(String textString, String markdownText) {
-        Pattern p = Pattern.compile("url: (.+?)\n");
+        Pattern p = Pattern.compile("url: (.+?)(\n)");
         Matcher m = p.matcher(textString);
 
         if (m.find()) {
             String matchedString = m.group(0);
             String textToTranslate = m.group(1);
+            String endingMatchedString = m.group(2);
 
             String translatedString = GoogleTranslationAPI.translateString(textToTranslate, targetLanguage);
-            // Remove \n as last character from matchedString.
-            matchedString = matchedString.substring(0, matchedString.length()-1);
 
-            markdownText = markdownText.replace(matchedString, "url: " + translatedString);
+            markdownText = markdownText.replace(matchedString, "url: /" + targetLanguage + translatedString + endingMatchedString);
         }
         return markdownText;
     }
@@ -186,16 +183,18 @@ public class BlogPostParsing {
     }
 
     static String translateHeading(String textString, String markdownText) {
-        Pattern p = Pattern.compile("## (.+?) \\{#");
+        // Ref: https://stackoverflow.com/questions/9801630/what-is-the-difference-between-square-brackets-and-parentheses-in-a-regex
+        Pattern p = Pattern.compile("## (.+?)( \\{|\n)");
         Matcher m = p.matcher(textString);
 
         if (m.find()) {
             String matchedString = m.group(0);
             String textToTranslate = m.group(1);
+            String endingMatchedString = m.group(2);
 
             String translatedString = GoogleTranslationAPI.translateString(textToTranslate, targetLanguage);
 
-            markdownText = markdownText.replace(matchedString, "## " + translatedString + " {#");
+            markdownText = markdownText.replace(matchedString, "## " + translatedString + endingMatchedString);
         }
         return markdownText;
     }
@@ -274,7 +273,7 @@ public class BlogPostParsing {
 
     static String translateContent(String textString, String markdownText) {
         String translatedString = GoogleTranslationAPI.translateString(textString, targetLanguage);
-        return markdownText.replace(textString, translatedString);
+        return markdownText.replace(textString, translatedString + "\n");
     }
 
     static void saveTranslatedBlogPost(String filePath, String markdownText) {
