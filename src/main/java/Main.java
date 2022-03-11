@@ -4,12 +4,12 @@ import java.io.FilenameFilter;
 public class Main {
 
     public static void main(String[] args) {
-        //FixIssuesInExportedContent.fixIssuesInExportedContent();
-        translateBlogPosts("zh");
+        String targetLanguageName = "fr"; // zh for chinese
+        translateBlogPosts(targetLanguageName);
     }
 
     public static void translateBlogPosts(String targetLanguage) {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File("content/");
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return !fileName.equals("_index.md");
