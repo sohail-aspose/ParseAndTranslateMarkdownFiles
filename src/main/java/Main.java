@@ -4,12 +4,16 @@ import java.io.FilenameFilter;
 public class Main {
 
     public static void main(String[] args) {
-        String targetLanguageName = "fr"; // zh for chinese
+        String targetLanguageName = "zh"; // zh for chinese
         translateBlogPosts(targetLanguageName);
     }
 
     public static void translateBlogPosts(String targetLanguage) {
-        File folder = new File("content/");
+        // For Windows
+        File folder = new File("E:\\ParseAndTranslateMarkdownFiles\\ParseAndTranslateMarkdownFiles\\content");
+        // For Mac
+        //File folder = new File("content/");
+
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return !fileName.equals("_index.md");

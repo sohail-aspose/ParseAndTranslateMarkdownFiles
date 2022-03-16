@@ -10,8 +10,11 @@ import java.util.List;
 
 public class GoogleTranslationAPI {
 
+    // For Windows
+    static String KEY_FILE_PATH = "E:\\rugged-shuttle-339315-77b182de5e7c.json";
+    // For Mac
+    //static String KEY_FILE_PATH = "/Users/muhammadsohailismail/Documents/Aspose/Hugo/rugged-shuttle-339315-77b182de5e7c.json";
 
-    static String KEY_FILE_PATH = "/Users/muhammadsohailismail/Documents/Aspose/Hugo/rugged-shuttle-339315-77b182de5e7c.json";
     public static ArrayList<String> translateArrayList(ArrayList<String> commentsToTranslate, String targetLanguage) {
         ArrayList<String> translatedComments = new ArrayList<>();
 
