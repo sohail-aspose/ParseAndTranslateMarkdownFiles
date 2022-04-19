@@ -1,6 +1,10 @@
 import Utils.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -10,18 +14,21 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FixIssuesInExportedContent {
 
-    public static String BLOG_URL = "https://blog.conholdate.com";
+    public static String BLOG_URL = "https://blog.groupdocs.com";
+    public static String CONTENT_FOLDER_PATH = "content/";
 
     public static void fixIssuesInExportedContent() {
         // Step 0: Remove type: post in the front matter of all blog posts.
         // Step 0.1: Replace excerpt tag in the front matter with summary.
         // Step 0.2: Remove <p> and </p> tags from the excerpt/summary.
-        // Step 1: Read all files inside Conholdate.Total that ends with md.
+        // Step 1: Read all files inside CONTENT_FOLDER_PATH that ends with md.
         // Step 2: Create folder for each file without md part.
         // Step 3: Copy the index.md file to the respective folder.
         // Step 4: Create images folder inside all file folders.
@@ -31,34 +38,40 @@ public class FixIssuesInExportedContent {
         // Step 7: Read Blog web content, fetch GISTs URLs and place Hugo shortcode for GIST.
         // Step 8: Format and show Code Samples.
 
-        step0();
-        step1ToStep3();
+        //step0();
+        /*step1ToStep3();
         step4();
         step5();
         step6();
-        step7();
+        step7();*/
+        //placeAllHyperlinksAtTheEndOfTheFile();
+        /*capitalizeAuthorName();
+        addCategoryToFrontMatter();
+        deleteUnnecessaryFolders();*/
+        //findDraftPosts();
+        //deleteTranslatedFiles();
     }
 
     public static void step0() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
-                return !fileName.equals("_index.md");
+                return fileName.endsWith(".md") && !fileName.equals("_index.md");
             }
         });
 
-        for (File aFile : listOfFiles) {
+        /*for (File aFile : listOfFiles) {
             executeStep0(aFile.getPath());
-        }
+        }*/
 
-        /*for (File listOfFolder : listOfFiles) {
+        for (File listOfFolder : listOfFiles) {
             if (listOfFolder.isDirectory()) {
-                File indexFile = new File(listOfFolder, "index.fr.md");
+                File indexFile = new File(listOfFolder, "index.md");
                 if (indexFile.exists()) {
                     executeStep0(indexFile.getPath());
                 }
             }
-        }*/
+        }
     }
 
     public static void executeStep0(String filePath) {
@@ -71,6 +84,8 @@ public class FixIssuesInExportedContent {
             markdownText = markdownText.replace("<P>", "");
             markdownText = markdownText.replace("</P>", "");
             markdownText = markdownText.replace("&nbsp;", " ");
+            markdownText = markdownText.replace("``````", "```\n```");
+            markdownText = markdownText.replace(">}}```", ">}}\n\n```");
 
             // Format Code Samples in the blog posts.
             ArrayList<String> preCodes = new ArrayList();
@@ -114,6 +129,19 @@ public class FixIssuesInExportedContent {
                         "**" + strongTextWithOutTag.get(i) + "**");
             }
 
+            // Remove BaseURL from the url in the front matter.
+            // Fetch Blog URL
+            p = Pattern.compile("url: " + BLOG_URL + "(.*)");
+            m = p.matcher(markdownText);
+            String fetchedBlogURL = null;
+            String urlFM = null;
+            while (m.find()) {
+                urlFM = m.group(0);
+                fetchedBlogURL = m.group(1);
+            }
+
+            markdownText = markdownText.replace(urlFM, "url: " + fetchedBlogURL);
+
             overwriteFileContent(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -129,7 +157,7 @@ public class FixIssuesInExportedContent {
 
     public static void step1ToStep3() {
         try {
-            File folder = new File("content/Conholdate.Total/");
+            File folder = new File(CONTENT_FOLDER_PATH);
             File[] listOfFiles = folder.listFiles(new FilenameFilter() {
                 public boolean accept(File directory, String fileName) {
                     return fileName.endsWith(".md") && !fileName.contains("_index");
@@ -138,11 +166,32 @@ public class FixIssuesInExportedContent {
 
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
-                    System.out.println(listOfFiles[i].getName());
+                    //System.out.println(listOfFiles[i].getName());
                     String filePath = listOfFiles[i].getPath();
+
+                    // Derive folder name for a blog post.
+                    String markdownText = Utils.readFile(filePath);
+                    Pattern p = Pattern.compile("url: (.*)");
+                    Matcher m = p.matcher(markdownText);
+                    String folderPath = null;
+                    if (m.find()) {
+                        folderPath = m.group(1);
+                    }
+                    folderPath = folderPath.replace(BLOG_URL, "");
+                    if (folderPath.startsWith("/")) {
+                        folderPath = folderPath.substring(1);
+                    }
+                    if (folderPath.endsWith("/")) {
+                        folderPath = folderPath.substring(0, folderPath.length() - 1);
+                    }
+                    folderPath = folderPath.replaceAll("/", "-");
+                    //folderPath = folderPath.replace("?p=", "");
+
                     //System.out.println(listOfFiles[i].getAbsolutePath());
                     //System.out.println(listOfFiles[i].getCanonicalPath());
-                    String folderPath = filePath.substring(0, filePath.length() - 3);
+                    //String folderPath = filePath.substring(0, filePath.length() - 3);
+
+                    folderPath = "content/" + folderPath;
                     File theDir = new File(folderPath);
                     if (!theDir.exists()) {
                         theDir.mkdirs();
@@ -159,7 +208,7 @@ public class FixIssuesInExportedContent {
     }
 
     public static void step4() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFolders = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return directory.isDirectory() && !fileName.equals("images");
@@ -177,7 +226,7 @@ public class FixIssuesInExportedContent {
     }
 
     public static void step5() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFolders = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return directory.isDirectory() && !fileName.equals("images");
@@ -191,8 +240,41 @@ public class FixIssuesInExportedContent {
         }
     }
 
+    static void executeStep5Deprecate(String folderPath) {
+        try {
+            //String folderPath = "content/Conholdate.Total/2020-06-22-build-your-own-google-docs-like-app/";
+            String saveAt = new File(folderPath, "images").getPath() + File.separator;
+            File indexFile = new File(folderPath, "index.md");
+            ArrayList<String> urls = new ArrayList();
+            if (indexFile.exists()) {
+                String markdownText = Utils.readFile(indexFile.getPath());
+
+                // I used ? after * to make it lazy instead of greedy.
+                // Please read https://www.regular-expressions.info/repeat.html for details.
+                // Parenthesis are for capturing the matched string.
+                Pattern p = Pattern.compile("!\\[(.*?)\\]\\((.*?)[\\) ]");
+                Matcher m = p.matcher(markdownText);
+                while (m.find()) {
+                    // Check this https://stackoverflow.com/questions/17969436/java-regex-capturing-groups/17969618
+                    // to learn about groups.
+                    //System.out.println(m.group(0)); // Matches complete Pattern.
+                    //System.out.println(m.group(1)); // To get the captured string.
+                    //System.out.println(m.group(2)); // To get the captured string.
+                    urls.add(m.group(2));
+                }
+            }
+            for (String url : urls) {
+                String fileName = url.substring(url.lastIndexOf('/') + 1);
+                downloadImageAndSaveToLocalDir(url, saveAt + fileName);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     static void executeStep5(String folderPath) {
         try {
+            System.out.println("Downloading images of " + folderPath);
             //String folderPath = "content/Conholdate.Total/2020-06-22-build-your-own-google-docs-like-app/";
             String saveAt = new File(folderPath, "images").getPath() + File.separator;
             File indexFile = new File(folderPath, "index.md");
@@ -225,6 +307,14 @@ public class FixIssuesInExportedContent {
     static void downloadImageAndSaveToLocalDir(String imageURL, String saveAt) {
         try {
             URL url = new URL(imageURL);
+
+            // To tackle problem of redirection.
+            URLConnection connection = url.openConnection();
+            String redirect = connection.getHeaderField("Location");
+            if (redirect != null){
+                url = new URL(redirect);
+            }
+
             InputStream in = new BufferedInputStream(url.openStream());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
@@ -245,10 +335,8 @@ public class FixIssuesInExportedContent {
         }
     }
 
-
-
     public static void step7() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return !fileName.equals("_index.md");
@@ -272,7 +360,7 @@ public class FixIssuesInExportedContent {
             Pattern p = Pattern.compile("url: (.*)");
             Matcher m = p.matcher(markdownText);
             String blogURL = null;
-            while (m.find()) {
+            if (m.find()) {
                 blogURL = BLOG_URL + m.group(1);
             }
 
@@ -313,9 +401,10 @@ public class FixIssuesInExportedContent {
 
             // Replace GISTs in markdowntext with Hugo Gist Shortcode.
             for (String aGistTag : gistTags) {
-                markdownText = markdownText.replaceFirst("<div class=\"oembed-gist\">[\\s\\S]*?</div>", aGistTag);
+                markdownText = markdownText.replaceFirst("\\[gist (.*?)\\]", aGistTag);
             }
-
+            // To remove extra \ before gist tag.
+            markdownText = markdownText.replace("\\{{<", "{{<");
             overwriteFileContent(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -350,7 +439,7 @@ public class FixIssuesInExportedContent {
     }
 
     public static void step6() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFolders = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return directory.isDirectory() && !fileName.equals("images");
@@ -408,8 +497,7 @@ public class FixIssuesInExportedContent {
                 p = Pattern.compile("<figcaption>(.*?)</figcaption>");
                 m = p.matcher(figure);
                 if (m.find()) {
-                    String srcURL = m.group(1);
-                    captionIs = srcURL.substring(srcURL.lastIndexOf('/') + 1);
+                    captionIs = m.group(1);
                 }
 
                 if (srcIs != null) {
@@ -434,7 +522,7 @@ public class FixIssuesInExportedContent {
     }
 
     public static void stepTemp() {
-        File folder = new File("content/Conholdate.Total/");
+        File folder = new File(CONTENT_FOLDER_PATH);
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return !fileName.equals("_index.md");
@@ -474,6 +562,254 @@ public class FixIssuesInExportedContent {
             }
 
             overwriteFileContent(filePath, markdownText);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void findDraftPosts() {
+        try {
+            File folder = new File(CONTENT_FOLDER_PATH);
+            File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+                public boolean accept(File directory, String fileName) {
+                    return fileName.endsWith(".md") && !fileName.contains("_index");
+                }
+            });
+
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile()) {
+                    String filePath = listOfFiles[i].getPath();
+                    String markdownText = Utils.readFile(filePath);
+                    if(markdownText.contains("draft: true")) {
+                        //System.out.println(listOfFiles[i].getName());
+                        // Move them to another folder
+                        Path source = Paths.get(filePath);
+                        Path destination = Paths.get("content/draftPosts/" + listOfFiles[i].getName());
+                        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void capitalizeAuthorName() {
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                File indexFile = new File(listOfFolder, "index.md");
+                if (indexFile.exists()) {
+                    executeCapitalizeAuthorNameStep(indexFile.getPath());
+                }
+            }
+        }
+    }
+
+    public static void executeCapitalizeAuthorNameStep(String filePath) {
+        try {
+            String markdownText = Utils.readFile(filePath);
+
+            Pattern p = Pattern.compile("author: (.*)");
+            Matcher m = p.matcher(markdownText);
+            String authorName = "";
+            while (m.find()) {
+                authorName = m.group(1);
+
+                String updatedAuthorName = authorName.replace(".", " ");
+                updatedAuthorName = WordUtils.capitalize(updatedAuthorName);
+
+                markdownText = markdownText.replace(authorName, "'" + updatedAuthorName + "'");
+
+                overwriteFileContent(filePath, markdownText);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void addCategoryToFrontMatter() {
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                File indexFile = new File(listOfFolder, "index.md");
+                if (indexFile.exists()) {
+                    executeAddCategoryToFrontMatter(indexFile.getPath());
+                }
+            }
+        }
+    }
+
+    public static void executeAddCategoryToFrontMatter(String filePath) {
+        try {
+            String markdownText = Utils.readFile(filePath);
+
+            Pattern p = Pattern.compile("tags: (.*)");
+            Matcher m = p.matcher(markdownText);
+            String tags = "";
+            while (m.find()) {
+                tags = m.group(1);
+            }
+
+            if(tags != "") {
+                p = Pattern.compile("'GroupDocs\\.(.*?) Product Family'");
+                m = p.matcher(tags);
+                ArrayList<String> categories = new ArrayList<>();
+                while (m.find()) {
+                    categories.add(m.group(0));
+                }
+
+                String updatedTags = tags;
+                for(String category : categories){
+                    updatedTags = updatedTags.replaceFirst(category + "(, )?", "");
+                }
+                // Remove "All" tag if it exists in the tags.
+                updatedTags = updatedTags.replaceFirst("'All'(, )?", "");
+
+                if(categories.size() > 0) {
+                    StringBuilder categoriesTag = new StringBuilder("categories: [");
+                    for (int i = 0; i < categories.size(); i++) {
+                        if (i == 0) {
+                            categoriesTag.append(categories.get(i));
+                        } else {
+                            categoriesTag.append(", " + categories.get(i));
+                        }
+                    }
+                    categoriesTag.append("]");
+
+                    markdownText = markdownText.replace(tags, updatedTags + "\n" + categoriesTag.toString());
+                }
+            }
+
+            overwriteFileContent(filePath, markdownText);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void deleteUnnecessaryFolders() {
+        ArrayList<String> unnecessaryFolders = new ArrayList<>();
+        unnecessaryFolders.add(CONTENT_FOLDER_PATH + "recent-posts");
+        unnecessaryFolders.add(CONTENT_FOLDER_PATH + "newsletters");
+        unnecessaryFolders.add(CONTENT_FOLDER_PATH + "categories");
+        unnecessaryFolders.add(CONTENT_FOLDER_PATH + "archives");
+
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        ArrayList<File> foldersToDelete = new ArrayList<File>();
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                if(unnecessaryFolders.contains(listOfFolder.getPath())) {
+                    foldersToDelete.add(listOfFolder);
+                }
+            }
+        }
+
+        try {
+            for (File folderToDelete : foldersToDelete) {
+                FileUtils.deleteDirectory(folderToDelete);
+            }
+        } catch (Exception e) {
+            System.out.println("Error while deleting unnecessary folders");
+        }
+    }
+
+    public static void deleteTranslatedFiles() {
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                File indexFile = new File(listOfFolder, "index.fr.md"); // for Chinese use index.zh.md
+                if (indexFile.exists()) {
+                    if(!indexFile.delete()) {
+                        System.out.println("Not Deleted: " + indexFile.getPath());
+                    }
+                }
+            }
+        }
+    }
+
+    public static void placeAllHyperlinksAtTheEndOfTheFile() {
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                File indexFile = new File(listOfFolder, "index.md");
+                if (indexFile.exists()) {
+                    executePlaceAllHyperlinksAtTheEndOfTheFile(indexFile.getPath());
+                }
+            }
+        }
+    }
+
+    public static void executePlaceAllHyperlinksAtTheEndOfTheFile(String filePath) {
+        try {
+            String markdownText = Utils.readFile(filePath);
+
+            Pattern p = Pattern.compile("(\\[.+?\\])\\((.+?)\\)(\\))?");
+            Matcher m = p.matcher(markdownText);
+            ArrayList<String> hyperlinks = new ArrayList();
+            ArrayList<String> firstParts = new ArrayList();
+            ArrayList<String> lastParts = new ArrayList();
+            while (m.find()) {
+                hyperlinks.add(m.group(0));
+                firstParts.add(m.group(1));
+                if(m.group(3) == null) {
+                    lastParts.add(m.group(2));
+                } else {
+                    lastParts.add(m.group(2) + m.group(3));
+                }
+
+                /*System.out.println(m.group(0));
+                System.out.println(m.group(1));
+                if(m.group(3) == null) {
+                    System.out.println(m.group(2));
+                } else {
+                    System.out.println(m.group(2) + m.group(3));
+                }*/
+            }
+
+            for(int i=0; i<hyperlinks.size(); i++) {
+                int urlIndex = i+1;
+                markdownText = StringUtils.replaceOnce(markdownText, hyperlinks.get(i), firstParts.get(i) + "[" + urlIndex + "]");
+            }
+
+            // Append URLs at the end of the file.
+            StringBuilder markdownBuilder = new StringBuilder(markdownText);
+            markdownBuilder.append("\n\n");
+            for(int i=0; i<lastParts.size(); i++) {
+                int urlIndex = i+1;
+                markdownBuilder.append("[" + urlIndex + "]: " + lastParts.get(i) + "\n");
+            }
+
+            overwriteFileContent(filePath, markdownBuilder.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

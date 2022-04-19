@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import Utils.*;
+import org.apache.commons.lang3.StringUtils;
 
 public class BlogPostParsing {
 
@@ -33,7 +34,8 @@ public class BlogPostParsing {
                     continue;
                 } else if(textString.startsWith("---") || textString.startsWith("author: ") ||
                     textString.startsWith("date: ") || textString.startsWith("categories:") ||
-                        textString.startsWith("tags:")) {
+                        textString.startsWith("tags:") || textString.startsWith("draft: ")
+                        || textString.startsWith("aliases:")) {
                     continue;
                 } else if(textString.startsWith("title: ")) {
                     markdownText = translateTitle(textString, markdownText);
@@ -61,6 +63,10 @@ public class BlogPostParsing {
                     markdownText = translateContent(textString, markdownText);
                 }
             }
+            // In translated files, hyperlinks tag contain unnecessary space like [Supported] [1].
+            // This space breaks the hyperlink. Find all such spaces and remove them.
+            markdownText = removeSpaceFromHyperlinkTags(markdownText);
+
             saveTranslatedBlogPost(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -74,6 +80,13 @@ public class BlogPostParsing {
         if (m.find()) {
             String matchedString = m.group(0);
             String textToTranslate = m.group(1);
+
+            if (textToTranslate.startsWith("\"") || textToTranslate.startsWith("'")) {
+                textToTranslate = textToTranslate.substring(1);
+            }
+            if (textToTranslate.endsWith("\"") || textToTranslate.endsWith("'")) {
+                textToTranslate = textToTranslate.substring(0, textToTranslate.length() - 1);
+            }
 
             String translatedString = GoogleTranslationAPI.translateString(textToTranslate, targetLanguage);
 
@@ -91,6 +104,7 @@ public class BlogPostParsing {
             String textToTranslate = m.group(1);
 
             String translatedString = GoogleTranslationAPI.translateString(textToTranslate, targetLanguage);
+            //System.out.println("summary: \"" + translatedString + "\"");
 
             markdownText = markdownText.replace(matchedString, "summary: \"" + translatedString + "\"");
         }
@@ -200,7 +214,7 @@ public class BlogPostParsing {
     }
 
     static boolean isAHyperlinkAtEndOfABlogPost(String textString) {
-        Pattern p = Pattern.compile(" \\[\\d{1,3}]: ");
+        Pattern p = Pattern.compile("( )?\\[\\d{1,3}]: ");
         Matcher m = p.matcher(textString);
         return m.find();
     }
@@ -274,6 +288,25 @@ public class BlogPostParsing {
     static String translateContent(String textString, String markdownText) {
         String translatedString = GoogleTranslationAPI.translateString(textString, targetLanguage);
         return markdownText.replace(textString, translatedString + "\n");
+    }
+
+    static String removeSpaceFromHyperlinkTags(String markdownText) {
+        Pattern p = Pattern.compile("] (\\[\\d{1,3}])");
+        Matcher m = p.matcher(markdownText);
+
+        ArrayList<String> linkSyntaxWithSpace = new ArrayList<>();
+        ArrayList<String> lastPart = new ArrayList<>();
+
+        while (m.find()) {
+            linkSyntaxWithSpace.add(m.group(0));
+            lastPart.add(m.group(1));
+        }
+
+        for(int i=0; i< linkSyntaxWithSpace.size(); i++) {
+            markdownText = StringUtils.replaceOnce(markdownText, linkSyntaxWithSpace.get(i), "]" + lastPart.get(i));
+        }
+
+        return markdownText;
     }
 
     static void saveTranslatedBlogPost(String filePath, String markdownText) {

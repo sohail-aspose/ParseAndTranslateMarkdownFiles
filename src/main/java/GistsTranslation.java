@@ -55,6 +55,10 @@ public class GistsTranslation {
                 String commentLine = line.replaceFirst("//", "");
                 commentLine = commentLine.trim();
                 commentsToTranslate.add(commentLine);
+            } else if(line.startsWith("* ")) {
+                String commentLine = line.replaceFirst("\\* ", "");
+                commentLine = commentLine.trim();
+                commentsToTranslate.add(commentLine);
             }
         }
 
