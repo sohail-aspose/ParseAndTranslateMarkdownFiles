@@ -50,6 +50,8 @@ public class FixIssuesInExportedContent {
         deleteUnnecessaryFolders();*/
         //findDraftPosts();
         //deleteTranslatedFiles();
+
+        appendLanguageCodeToSeeAlsoBlogURLs();
     }
 
     public static void step0() {
@@ -810,6 +812,43 @@ public class FixIssuesInExportedContent {
             }
 
             overwriteFileContent(filePath, markdownBuilder.toString());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void appendLanguageCodeToSeeAlsoBlogURLs() {
+        File folder = new File(CONTENT_FOLDER_PATH);
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return !fileName.equals("_index.md");
+            }
+        });
+
+        String[] languageFileNames = {"index.de.md", "index.es.md", "index.fr.md", "index.it.md", "index.ja.md",
+                "index.ko.md", "index.ru.md", "index.zh.md", "index.pt.md" };
+        String[] languageCodes = {"de", "es", "fr", "it", "ja", "ko", "ru", "zh", "pt" };
+
+        for (File listOfFolder : listOfFiles) {
+            if (listOfFolder.isDirectory()) {
+                for(int i=0; i<languageFileNames.length; i++) {
+                    File indexFile = new File(listOfFolder, languageFileNames[i]);
+                    if (indexFile.exists()) {
+                        executeAppendLanguageCodeToSeeAlsoBlogURLs(indexFile.getPath(), languageCodes[i]);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void executeAppendLanguageCodeToSeeAlsoBlogURLs(String filePath, String languageCode) {
+        try {
+            String markdownText = Utils.readFile(filePath);
+
+            markdownText = markdownText.replace("https://blog.aspose.com/" + languageCode + "/", "https://blog.aspose.com/");
+            markdownText = markdownText.replace("https://blog.aspose.com/", "https://blog.aspose.com/" + languageCode + "/");
+
+            overwriteFileContent(filePath, markdownText);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

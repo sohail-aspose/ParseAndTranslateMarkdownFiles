@@ -8,9 +8,9 @@ public class Main {
     // 2. If six (`) are appearing like `````` replace them with ```\n```
     // 3. If thee (`) are appearing along with gist like >}}```, replace them with >}}\n\n```.
     public static void main(String[] args) {
-        //FixIssuesInExportedContent.fixIssuesInExportedContent();
-        String targetLanguageName = "zh"; // fr for French and zh for Chinese
-        translateBlogPosts(targetLanguageName);
+        FixIssuesInExportedContent.fixIssuesInExportedContent();
+        //String targetLanguageName = "zh"; // fr for French and zh for Chinese
+        //translateBlogPosts(targetLanguageName);
     }
 
     public static void translateBlogPosts(String targetLanguage) {
